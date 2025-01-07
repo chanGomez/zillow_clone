@@ -1,0 +1,17 @@
+<h1>Show</h1>
+<p>
+    <%= @listing.title%>
+</p>
+<p>
+    <%= @listing.price%>
+</p>
+<p>
+    <%= @listing.description%>
+</p>
+<p>
+    <%= @listing.location%>
+</p>
+
+<h1>google map</h1>
+<%puts @listing.longitude%>
+<div id="map" data-controller="google-maps" data-google-maps-latitude="<%= @listing.latitude %>" data-google-maps-longitude="<%= @listing.longitude %>" data-google-maps-title="<%= @listing.title %>" style="height: 400px; width: 100%;"></div>

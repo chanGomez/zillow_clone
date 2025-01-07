@@ -1,0 +1,11 @@
+<%= tag.div id: dom_id(listing) do %>
+<%=turbo_stream_from listing%>
+
+<div class="grid grid-cols-8 items-center py-4">
+
+    <div class="col-span-5">
+
+        <%= listing.title  %>
+    </div>
+</div>
+<%end%>

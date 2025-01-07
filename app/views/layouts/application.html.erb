@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title><%= content_for(:title) || "Zillow Clone" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=<%=Rails.application.credentials.google_maps_api_key%>&libraries=places" async defer></script>
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+
+</head>
+
+<body>
+    <main class="">
+
+        <body class="bg-blue-100">
+            <nav class="relative px-40 py-4 flex justify-between items-center bg-white">
+                <a class="text-3xl font-bold leading-none" href="#">
+                    <%= link_to "Villow", root_path, class: "text-xl font-bold no-underline"%>
+                </a>
+                <%if user_signed_in?%>
+                <ul class="hidden absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 lg:flex lg:mx-auto lg:flex lg:items-center lg:w-auto lg:space-x-6">
+                    <li><a class="text-sm text-gray-400 hover:text-gray-500" href="#">
+                    <li><%= link_to "Home", root_path%></li></a></li>
+
+                    <li class="text-gray-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" class="w-4 h-4 current-fill" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v0m0 7v0m0 7v0m0-13a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                        </svg>
+                    </li>
+                    <li><a class="text-sm text-gray-400 hover:text-gray-500" href="#">
+                    <li><%= link_to "Messages", chat_rooms_path%></li></a></li>
+                    <li class="text-gray-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" class="w-4 h-4 current-fill" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v0m0 7v0m0 7v0m0-13a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                        </svg>
+                    </li>
+                    <li><a class="text-sm text-gray-400 hover:text-gray-500" href="#">
+                    <li><%= link_to "Create Listing", new_listing_path%></li></a></li>
+                </ul>
+                <%else%>
+                <ul class="hidden absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 lg:flex lg:mx-auto lg:flex lg:items-center lg:w-auto lg:space-x-6">
+                    <li><a class="text-sm text-gray-400 hover:text-gray-500" href="#">
+                    <li><%= link_to "Home", root_path%></li></a></li>
+
+                    <li class="text-gray-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" class="w-4 h-4 current-fill" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v0m0 7v0m0 7v0m0-13a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                        </svg>
+                    </li>
+                    <li><a class="text-sm text-gray-400 hover:text-gray-500" href="#">
+                    <li><%= link_to "Sell", new_user_session_path%></li></a></li>
+                    <li class="text-gray-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" class="w-4 h-4 current-fill" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v0m0 7v0m0 7v0m0-13a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                        </svg>
+                    </li>
+                    <li><a class="text-sm text-gray-400 hover:text-gray-500" href="#">
+                    <li><%= link_to "Find Agent", new_user_session_path%></li></a></li>
+                </ul>
+                <%end%>
+
+
+                <%if user_signed_in?%>
+                <div class="hidden lg:inline-block lg:ml-auto lg:mr-3 py-2 px-6 bg-gray-50 hover:bg-gray-100 text-sm text-gray-900 font-bold  rounded-xl transition duration-200" href="#"><%= button_to "Logout", destroy_user_session_path, method: :delete%></div>
+                <div class="hidden lg:inline-block py-2 px-6 bg-blue-500 hover:bg-blue-600 text-sm text-white font-bold rounded-xl transition duration-200" href="#"><%= link_to "Profile", edit_user_registration_path%></div>
+                <%else%>
+                <div class="hidden lg:inline-block lg:ml-auto lg:mr-3 py-2 px-6 bg-gray-50 hover:bg-gray-100 text-sm text-gray-900 font-bold  rounded-xl transition duration-200" href="#"><%= link_to "Sign In", new_user_session_path%></div>
+                <div class="hidden lg:inline-block py-2 px-6 bg-blue-500 hover:bg-blue-600 text-sm text-white font-bold rounded-xl transition duration-200" href="#"><%= link_to "Sign Up", new_user_registration_path%></div>
+                <%end%>
+            </nav>
+        </body>
+
+        <script>
+            // Burger menus
+            document.addEventListener('DOMContentLoaded', function() {
+                // open
+                const burger = document.querySelectorAll('.navbar-burger');
+                const menu = document.querySelectorAll('.navbar-menu');
+
+                if (burger.length && menu.length) {
+                    for (var i = 0; i < burger.length; i++) {
+                        burger[i].addEventListener('click', function() {
+                            for (var j = 0; j < menu.length; j++) {
+                                menu[j].classList.toggle('hidden');
+                            }
+                        });
+                    }
+                }
+
+                // close
+                const close = document.querySelectorAll('.navbar-close');
+                const backdrop = document.querySelectorAll('.navbar-backdrop');
+
+                if (close.length) {
+                    for (var i = 0; i < close.length; i++) {
+                        close[i].addEventListener('click', function() {
+                            for (var j = 0; j < menu.length; j++) {
+                                menu[j].classList.toggle('hidden');
+                            }
+                        });
+                    }
+                }
+
+                if (backdrop.length) {
+                    for (var i = 0; i < backdrop.length; i++) {
+                        backdrop[i].addEventListener('click', function() {
+                            for (var j = 0; j < menu.length; j++) {
+                                menu[j].classList.toggle('hidden');
+                            }
+                        });
+                    }
+                }
+            });
+        </script>
+        <div class="">
+            <%= yield %>
+        </div>
+    </main>
+</body>
+
+</html>

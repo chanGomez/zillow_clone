@@ -1,0 +1,64 @@
+<%= form_with model: listing do |form| %>
+<%if form.object.errors.any?%>
+<% form.object.errors.full_messages.each do |message| %>
+<div>
+    <%=message%>
+</div>
+<%end%>
+<%end%>
+
+<div class="field">
+    <%= form.label :title%>
+    <%= form.text_field :title%>
+</div>
+
+<div class="field">
+    <%= form.label :location %>
+    <%= form.text_field :location, id: "autocomplete", placeholder: "Enter a location", autocomplete: "off" %>
+</div>
+<script>
+    function initAutocomplete() {
+        const input = document.getElementById("autocomplete");
+        const autocomplete = new google.maps.places.Autocomplete(input, {
+            types: ["geocode"], // Restrict to address input
+            componentRestrictions: {
+                country: "us"
+            }, // Optional: Restrict to a specific country
+        });
+
+        autocomplete.addListener("place_changed", () => {
+            const place = autocomplete.getPlace();
+            if (place.geometry) {
+                // Extract latitude and longitude
+                const lat = place.geometry.location.lat();
+                const lng = place.geometry.location.lng();
+                console.log("Coordinates:", lat, lng);
+
+                // Store the data in hidden fields
+                document.getElementById("latitude").value = lat;
+                document.getElementById("longitude").value = lng;
+            }
+        });
+    }
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=<%= Rails.application.credentials.google_maps_api_key%>&libraries=places&callback=initAutocomplete" async>
+</script>
+
+
+
+<div class="field">
+    <%= form.label :description%>
+    <%= form.text_area :description%>
+</div>
+
+<div class="field">
+    <%= form.label :price%>
+    <%= form.number_field :price%>
+</div>
+
+<div class=" field">
+    <%= form.submit%>
+
+</div>
+<%end%>

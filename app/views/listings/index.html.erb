@@ -1,0 +1,16 @@
+<h1>
+    Listings
+</h1>
+<h1 class="ml-4">
+    <%= link_to "Create Listing", new_listing_path%>
+</h1>
+
+<div class="m-4">
+    <% @listings.each do |listing|%>
+    <div>
+        <h2> <%= link_to listing.title, listing %></h2>
+        <%= listing.description%>
+    </div>
+
+    <%end%>
+</div>
