@@ -1,0 +1,71 @@
+<div class="prose mx-auto  px-5">
+    <h1> Listing</h1>
+    <%= link_to "Edit", edit_listing_path(@listing) if user_signed_in? && @listing.user_id == current_user.id %>
+    <%= button_to "Contact Agent", chat_rooms_path(listing_id: @listing.id), method: :post if user_signed_in? && @listing.user_id != current_user.id %>
+
+    <h1><%=@listing.title%></h1>
+
+    <%= @listing.description%>
+    <% if @listing.images.attached? %>
+    <% @listing.images.each do |image| %>
+    <%= image_tag image, class: "uploaded-image" %>
+    <% end %>
+    <% else %>
+    <p>No images uploaded.</p>
+    <% end %>
+
+    <h1>google map</h1>
+    <div id="map" data-latitude="<%= @listing.latitude %>" data-longitude="<%= @listing.longitude %>" data-title="<%= @listing.title %>" style="height: 400px; width: 100%;">
+    </div>
+    <script async src="https://maps.googleapis.com/maps/api/js?key=<%= Rails.application.credentials.google_maps_api_key %>&libraries=places"></script>
+    <script type="module">
+        import {
+            initializeGoogleMap
+        } from "google_maps";
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const mapElement = document.getElementById("map");
+            if (mapElement) {
+                initializeGoogleMap(mapElement);
+            }
+        });
+    </script>
+
+
+
+    <h3>Add a Comment:</h3>
+    <%= form_with model: [@listing, Comment.new], local: true do |form| %>
+    <div>
+        <%= form.label :content %><br>
+        <%= form.text_area :content %>
+    </div>
+    <div>
+        <%= form.submit 'Post Comment' %>
+    </div>
+    <% end %>
+
+    <h2>Comments:</h2>
+    <ul>
+        <% @listing.comments.each do |comment| %>
+        <li>
+            <strong><%= comment.user.name %>:</strong>
+            <%= comment.content %>
+        </li>
+        <% end %>
+    </ul>
+
+    <h1><%= @user.name %></h1>
+    <p>Average Rating: <%= @user.average_rating %></p>
+
+
+    <h2>Leave a Rating:</h2>
+    <%= form_with model: [@user, Rating.new], url: user_ratings_path(@user), local: true do |form| %>
+    <div>
+        <%= form.label :rating, 'Rate this user (1-5)' %>
+        <%= form.number_field :rating, in: 1..5 %>
+    </div>
+    <div>
+        <%= form.submit 'Submit Rating' %>
+    </div>
+    <% end %>
+</div>

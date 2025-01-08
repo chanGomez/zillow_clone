@@ -1,16 +1,80 @@
-<h1>
-    Listings
-</h1>
-<h1 class="ml-4">
-    <%= link_to "Create Listing", new_listing_path%>
-</h1>
+<div class="flex justify-between items-center">
+    <h1> </h1>
+</div>
 
-<div class="m-4">
-    <% @listings.each do |listing|%>
-    <div>
-        <h2> <%= link_to listing.title, listing %></h2>
-        <%= listing.description%>
+<%
+=begin%>
+<div id="location" data-controller="geolocation">
+    <%= form_with url: listings_path, method: :get, local: true do %>
+    <%= submit_tag "Search" %>
+    <% end %>
+    <button data-action="geolocation#search">Search Nearby Listings</button>
+</div>
+<%
+=end%>
+
+
+<div class="w-full bg-cover bg-center" style="height:28rem; background-image: url(https://images.unsplash.com/photo-1489370321024-e0410ad08da4?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D; ">
+    <div class="justify-center h-full w-full bg-blue-900 bg-opacity-10">
+        <div class="pt-40 text-center">
+
+            <div class="max-w-2xl mx-auto" id="location" data-controller="geolocation">
+                <form class="flex items-center">
+                    <%= form_with url: listings_path, method: :get, local: true do %>
+                    <label for="voice-search" class="sr-only">Search</label>
+
+                    <div class="relative w-full">
+                        <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
+                            <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+
+                        <%= text_field_tag :search_term, params[:search_term], id: "search-input", placeholder: "Search by City, State, or ZIP Code", class:"bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" %>
+
+                    </div>
+                    <button type="submit" class="inline-flex items-center py-2.5 px-3 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"><svg class="mr-2 -ml-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>Search</button>
+                    <% end %>
+            </div>
+            <button data-action="geolocation#search" class="pt-4 pr-20 text-white text-lg ">Search Nearby Listings</button>
+
+
+            <%
+=begin%>
+            <h1 class="text-white text-2xl font-semibold uppercase md:text-3xl">Build Your new <span class="underline text-blue-400">Saas</span></h1>
+            <button class="mt-4 px-4 py-2 bg-blue-600 text-white text-sm uppercase font-medium rounded hover:bg-blue-500 focus:outline-none focus:bg-blue-500">Start project</button>
+            <%
+=end%>
+        </div>
     </div>
+</div>
 
-    <%end%>
+
+
+<div id="listings-container" class="mx-full px-5 m-10 mx-auto">
+    <% if params[:search_term].present? || params[:min_price].present? || params[:max_price].present?  %>
+    <h2>Search Results for " <%= params[:search_term] %>"</h2>
+    <%= form_with url: listings_path, method: :get, local: true do %>
+    <%= text_field_tag :min_price, params[:min_price], placeholder: "Min Price" %>
+    <%= text_field_tag :max_price, params[:max_price], placeholder: "Max Price" %>
+    <%= submit_tag "submit" %>
+    <% end %>
+    <% if @listings.any?%>
+
+    <div class="flex flex-wrap">
+        <%=  render @listings %>
+    </div>
+    <% else %>
+    <p>No listings found matching "<%= params[:search_term] %>".</p>
+    <% end %>
+
+    <% else %>
+
+    <div class="flex flex-wrap">
+        <%=  render @listings %>
+    </div>
+    <% end %>
+
 </div>
