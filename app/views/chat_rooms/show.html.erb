@@ -1,0 +1,29 @@
+<div class="prose mx-auto px-5">
+    <%
+=begin%>
+    <h1>Chat with <%= @chat_room.seller == current_user ? @chat_room.buyer.name : @chat_room.seller.name %></h1>
+    <%
+=end%>
+    <h1>Chat room with <%= @chat_room.seller == current_user ? @chat_room.buyer.name : @chat_room.seller.name %></h1>
+
+    <h2>Messages</h2>
+
+    <% @chat_room.messages.each do |message| %>
+    <p><strong><%= message.user.email %>:</strong> <%= message.content %></p>
+    <% end %>
+
+
+    <%
+=begin%>
+    <%= form_with url: chat_room_messages_path(@chat_room), local: true do |form| %>
+    <%= form.text_area :content, rows: 3 %>
+    <%= form.submit 'Send' %>
+    <% end %>
+    <%
+=end%>
+
+    <%= form_with(model: [ @chat_room, @chat_room.messages.build ], url: chat_room_messages_path(@chat_room), local: true) do |form| %>
+    <%= form.text_area :content, placeholder: "Type your message here..." %>
+    <%= form.submit "Send Message" %>
+    <% end %>
+</div>

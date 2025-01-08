@@ -1,0 +1,8 @@
+<h1>
+    URL Shortener
+</h1>
+
+<%= render partial: "form", locals: {comment: @Comment} %>
+<div id="comments" class="mt-8 flex flex-col divide-y divide-gray-100">
+    <%= render @comments%>
+</div>

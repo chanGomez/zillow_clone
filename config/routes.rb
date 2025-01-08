@@ -11,6 +11,20 @@ Rails.application.routes.draw do
 
   devise_for :users
   resources :listings
-  # Defines the root path route ("/")
+ resources :chat_rooms
+  resources :messages, only: [:create, :destroy]
+  resources :listings do
+    collection do
+      get :search
+    end
+     resources :chat_rooms
+    resources :comments, only: :create
+  end
+  resources :users do
+    resources :ratings, only: :create
+  end
+  resources :chat_rooms do
+    resources :messages, only: [:create]
+  end
   root "listings#index"
 end

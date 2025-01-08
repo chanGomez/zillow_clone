@@ -1,6 +1,6 @@
 class ListingsController < ApplicationController
   before_action :authenticate_user!, except: [:index, :show]#renders devise template to sign user in. 
-  before_action :set_listing, except: [:index, :new, :create]
+  # before_action :set_listing, except: [:index, :new, :create]
   
 def index
   @listings = Listing.includes(:comments).order(created_at: :desc)
@@ -22,7 +22,8 @@ end
   def show
     @listing = Listing.includes(:comments).find(params[:id])
     @user = @listing.user
-    puts @listing
+    p @listing.longitude
+    p @listing.latitude
   end
 
   def new
@@ -67,12 +68,12 @@ end
   params.require(:listing).permit(:title, :description, :price, :location, :latitude, :longitude, images: [])
   end
 
-  def set_listing
-    @listing = user_signed_in? ? Listing.find(params[:id]) : Listing.published.find(params[:id])
-   #if in case of an error or in this case an id that does not exit in the db then send user to home page
-  rescue ActiveRecord::RecordNotFound
-      redirect_to root_path 
-  #root_path is => "/"
-  end
+  # def set_listing
+  #   @listing = user_signed_in? ? Listing.find(params[:id]) : Listing.published.find(params[:id])
+  #  #if in case of an error or in this case an id that does not exit in the db then send user to home page
+  # rescue ActiveRecord::RecordNotFound
+  #     redirect_to root_path 
+  # #root_path is => "/"
+  # end
 
 end

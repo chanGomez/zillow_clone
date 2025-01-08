@@ -1,0 +1,8 @@
+<div class="prose mx-auto px-5">
+    <h1 class="font-bold text-4xl">All messages</h1>
+    <% if @chat_rooms.any?%>
+    <%= render @chat_rooms%>
+    <% else %>
+    <p>There are no messages.</p>
+    <% end %>
+</div>
