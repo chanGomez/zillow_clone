@@ -1,61 +1,157 @@
-<div class="prose mx-auto  px-5">
-    <h1> Listing</h1>
-    <%= link_to "Edit", edit_listing_path(@listing) if user_signed_in? && @listing.user_id == current_user.id %>
-    <%= button_to "Contact Agent", chat_rooms_path(listing_id: @listing.id), method: :post if user_signed_in? && @listing.user_id != current_user.id %>
+<div class="prose max-w-3xl m-20">
 
-    <h1><%=@listing.title%></h1>
-
-    <%= @listing.description%>
     <% if @listing.images.attached? %>
-    <% @listing.images.each do |image| %>
-    <%= image_tag image, class: "uploaded-image" %>
-    <% end %>
-    <% else %>
-    <p>No images uploaded.</p>
-    <% end %>
+    <div class="flex justify-between space-x-8">
+        <div id="controls-carousel" class="relative w-full data-carousel=" static">
+            <!-- Carousel wrapper -->
+            <div class="relative h-56 overflow-hidden rounded-lg md:h-96">
+                <% @listing.images.each_with_index do |image, index| %>
+                <div class="<%= index.zero? ? 'block' : 'hidden' %> duration-700 ease-in-out" data-carousel-item="<%= index.zero? ? 'active' : '' %>">
+                    <%
+=begin%>
+                    <img src="<%= image.url %>" class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="Listing Image <%= index + 1 %>">
+                    <%
+=end%>
+                    <%= image_tag image, class: "uploaded-image absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" %>
+                </div>
+                <% end %>
+            </div>
+            <!-- Slider controls -->
+            <button type="button" class="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-prev>
+                <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
+                    <svg class="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4" />
+                    </svg>
+                    <span class="sr-only">Previous</span>
+                </span>
+            </button>
+            <button type="button" class="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-next>
+                <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
+                    <svg class="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4" />
+                    </svg>
+                    <span class="sr-only">Next</span>
+                </span>
+            </button>
+        </div>
 
-    <h1>google map</h1>
-    <div id="map" data-controller="google-maps" data-google-maps-latitude="<%= @listing.latitude %>" data-google-maps-longitude="<%= @listing.longitude %>" data-google-maps-title="<%= @listing.title %>" style="height: 400px; width: 100%;"></div>
-
-
-
-    <h3>Add a Comment:</h3>
-    <%= form_with model: [@listing, Comment.new], local: true do |form| %>
-    <div>
-        <%= form.label :content %><br>
-        <%= form.text_area :content %>
-    </div>
-    <div>
-        <%= form.submit 'Post Comment' %>
-    </div>
-    <% end %>
-
-    <h2>Comments:</h2>
-    <ul>
-        <% @listing.comments.each do |comment| %>
-        <li>
-            <strong><%= comment.user.email %>:</strong>
-            <%= comment.content %>
-        </li>
+        <%
+=begin%>
         <% end %>
-    </ul>
+        <%
+=end%>
+        <% else %>
+        <p>No images uploaded.</p>
+        <% end %>
+        <div class="rounded-lg" id="map" data-controller="google-maps" data-google-maps-latitude="<%= @listing.latitude %>" data-google-maps-longitude="<%= @listing.longitude %>" data-google-maps-title="<%= @listing.title %>" style="height: 400px; width: 100%; rounded: "></div>
+    </div>
 
+    <div class="grid grid-cols-4 gap-8 mt-4">
+
+        <div class="bg-white rounded-lg border my-4 mx-6 w-full col-span-3">
+            <div class="px-4 py-5 sm:px-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Agent
+                </h3>
+                <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                <h1><%=@user.name%></h1>
+
+                </p>
+            </div>
+            <div class="border-t border-gray-200 px-4 py-5 sm:p-0">
+                <dl class="sm:divide-y sm:divide-gray-200">
+                    <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">
+                            Full name
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            <h1><%=@listing.title%></h1>
+
+                        </dd>
+                    </div>
+                    <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">
+                            Email address
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            <h1>$<%=@listing.price%>0</h1>
+                        </dd>
+                    </div>
+                    <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">
+                            Address
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            <h1><%=@listing.location%></h1>
+
+                        </dd>
+                    </div>
+                    <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">
+                            Description
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            <%= @listing.description%>
+
+
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg border my-4 mx-6 w-full m-auto flex flex-col items-center justify-center">
+            <div class="hidden lg:inline-block py-2 px-6 bg-blue-500 hover:bg-blue-600 text-sm text-white font-bold rounded-xl transition duration-200 prose m-10" href="#">
+                <%= button_to "Contact Agent", chat_rooms_path(listing_id: @listing.id), method: :post if user_signed_in? && @listing.user_id != current_user.id %>
+            </div>
+            <div class="bg-white border-2 border-blue-500 hidden lg:inline-block py-2 px-6 hover:bg-grey-100 text-sm text-blue-500 font-bold rounded-xl transition duration-200 prose m-10" href="#">
+                <%= button_to "Request a tour", chat_rooms_path(listing_id: @listing.id), method: :post if user_signed_in? && @listing.user_id != current_user.id %>
+            </div>
+
+        </div>
+
+
+    </div>
+
+    <div class="w-full bg-white rounded-lg border p-2 my-4 mx-6">
+        <h3 class="font-bold m-3">Comments</h3>
+
+        <%if @listing.comments.any?%>
+        <% @listing.comments.each do |comment| %>
+        <div class="flex flex-col">
+            <div class="border rounded-md p-3 mx-3 my-3">
+                <div class="flex gap-3 items-center">
+                    <h3 class="font-bold">
+                        <%= comment.user.email %>
+                    </h3>
+                </div>
+                <p class="text-gray-600 mt-2"> <%= comment.content %></p>
+            </div>
+        </div>
+        <% end %>
+        <% end %>
+
+        <%= form_with model: [@listing, Comment.new], local: true do |form| %>
+        <div>
+            <div class="w-full px-3 my-2">
+                <%= form.text_area :content, class:"bg-gray-100 rounded border border-gray-400 leading-normal resize-none w-full h-20 py-2 px-3 font-medium placeholder-gray-700 focus:outline-none focus:bg-white"%>
+            </div>
+        </div>
+        <div class="w-full flex justify-end px-3">
+            <%= form.submit 'Post Comment', class:"hidden lg:inline-block py-2 px-6 bg-blue-500 hover:bg-blue-600 text-sm text-white font-bold rounded-xl transition duration-200 prose my-3" %> </div>
+        <% end %>
+
+    </div>
+
+    <%
+=begin%>
     <h1><%= @user.email %></h1>
+    <%
+=end%>
     <%
 =begin%>
     <p>Average Rating: <%= @user.average_rating %></p>
     <%
 =end%>
 
-
-    <h2>Leave a Rating:</h2>
-    <%= form_with model: [@user, Rating.new], url: user_ratings_path(@user), local: true do |form| %>
-    <div>
-        <%= form.label :rating, 'Rate this user (1-5)' %>
-        <%= form.number_field :rating, in: 1..5 %>
-    </div>
-    <div>
-        <%= form.submit 'Submit Rating' %>
-    </div>
-    <% end %>
 </div>
