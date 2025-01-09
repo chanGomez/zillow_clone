@@ -16,6 +16,10 @@
     <%= form.label :location %>
     <%= form.text_field :location, id: "autocomplete", placeholder: "Enter a location", autocomplete: "off" %>
 </div>
+
+<%= form.hidden_field :latitude, id: "latitude" %>
+<%= form.hidden_field :longitude, id: "longitude" %>
+
 <script>
     function initAutocomplete() {
         const input = document.getElementById("autocomplete");
@@ -28,24 +32,54 @@
 
         autocomplete.addListener("place_changed", () => {
             const place = autocomplete.getPlace();
+
             if (place.geometry) {
                 // Extract latitude and longitude
                 const lat = place.geometry.location.lat();
                 const lng = place.geometry.location.lng();
-                console.log("Coordinates:", lat, lng);
 
-                // Store the data in hidden fields
+                // Populate the hidden fields
                 document.getElementById("latitude").value = lat;
                 document.getElementById("longitude").value = lng;
+
+                console.log("Coordinates:", lat, lng);
+
+                // Extract ZIP code
+                let zipCode = "";
+                if (place.address_components) {
+                    place.address_components.forEach((component) => {
+                        if (component.types.includes("postal_code")) {
+                            zipCode = component.long_name;
+                        }
+                    });
+                }
+
+                // Append ZIP code to the location string
+                let location = document.getElementById("autocomplete").value;
+                if (zipCode) {
+                    location += `, ${zipCode}`;
+                }
+
+                // Update the input field with the full location
+                document.getElementById("autocomplete").value = location;
+
+                // Log the full location
+                console.log("Full Location:", location);
             }
         });
+
     }
 </script>
+
+
 
 <script src="https://maps.googleapis.com/maps/api/js?key=<%= Rails.application.credentials.google_maps_api_key%>&libraries=places&callback=initAutocomplete" async>
 </script>
 
-
+<div class="field  m-4 ">
+    <%= form.label :images %>
+    <%= form.file_field :images, multiple: true %>
+</div>
 
 <div class="field">
     <%= form.label :description%>
