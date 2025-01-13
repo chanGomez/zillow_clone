@@ -1,5 +1,4 @@
 <div class="prose max-w-3xl m-20">
-
     <% if @listing.images.attached? %>
     <div class="flex justify-between space-x-8">
         <div id="controls-carousel" class="relative w-full data-carousel=" static">
@@ -101,12 +100,18 @@
         </div>
 
         <div class="bg-white rounded-lg border my-4 mx-6 w-full m-auto flex flex-col items-center justify-center">
+            <%if user_signed_in? && @listing.user_id != current_user.id%>
             <div class="hidden lg:inline-block py-2 px-6 bg-blue-500 hover:bg-blue-600 text-sm text-white font-bold rounded-xl transition duration-200 prose m-10" href="#">
                 <%= button_to "Contact Agent", chat_rooms_path(listing_id: @listing.id), method: :post if user_signed_in? && @listing.user_id != current_user.id %>
             </div>
             <div class="bg-white border-2 border-blue-500 hidden lg:inline-block py-2 px-6 hover:bg-grey-100 text-sm text-blue-500 font-bold rounded-xl transition duration-200 prose m-10" href="#">
                 <%= button_to "Request a tour", chat_rooms_path(listing_id: @listing.id), method: :post if user_signed_in? && @listing.user_id != current_user.id %>
             </div>
+            <%else%>
+            <div class="hidden lg:inline-block py-2 px-6 bg-blue-500 hover:bg-blue-600 text-sm text-white font-bold rounded-xl transition duration-200 prose my-3">
+                <%= link_to "Edit", edit_listing_path(@listing) if user_signed_in? && @listing.user_id == current_user.id %>
+            </div>
+            <%end%>
 
         </div>
 
@@ -143,15 +148,19 @@
 
     </div>
 
-    <%
-=begin%>
-    <h1><%= @user.email %></h1>
-    <%
-=end%>
-    <%
-=begin%>
-    <p>Average Rating: <%= @user.average_rating %></p>
-    <%
-=end%>
+    <p>Average Rating: <%= Rating.average_rating_for(@user) == 0 ? 'Be the first to rate this agent.' : Rating.average_rating_for(@user) %></p>
+
+    <h2>Leave a Rating:</h2>
+    <%= form_with model: [@listing, Rating.new], url: listing_ratings_path(@listing), local: true do |form| %>
+    <div>
+        <%= form.label :rating, 'Rate this agent (1-5)' %>
+        <%= form.number_field :rating, in: 1..5 %>
+    </div>
+    <div>
+        <%= form.submit 'Submit Rating' %>
+    </div>
+    <% end %>
+
+
 
 </div>

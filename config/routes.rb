@@ -26,5 +26,9 @@ Rails.application.routes.draw do
   resources :chat_rooms do
     resources :messages, only: [:create]
   end
+  resources :listings do
+    resources :ratings, only: :create
+  end
+
   root "listings#index"
 end

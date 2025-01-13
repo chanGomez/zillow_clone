@@ -1,7 +1,11 @@
+<%
+=begin%>
 <%= form_with(
-    model: message, 
+    model: [chat_room, Message.new], 
+    model: [message], 
     id: "message_form",
     method: :post,
+    local: false,
     data: {
         controller: "reset-form",
         action: "turbo:submit-end->reset-form#clearInput"
@@ -20,4 +24,20 @@
     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
 </svg>
 <% end %>
+<% end %>
+<%
+=end%>
+
+<%
+=begin%>
+<%= form_with(model: [chat_room, Message.new], local: false, id: "message-form") do |f| %>
+<%= f.text_field :content, id: "message-input", placeholder: "Type your message..." %>
+<%= f.submit "Send" %>
+<% end %>
+<%
+=end%>
+
+<%= form_with(model: [conversation, Message.new], local: false, id: "message-form", data: { controller: "message-form", action: "submit->message-form#submit" }) do |f| %>
+<%= f.text_field :content, id: "message-input", data: { target: "message-form.input" }, placeholder: "Type your message..." %>
+<%= f.submit "Send" %>
 <% end %>

@@ -7,6 +7,8 @@ class Listing < ApplicationRecord
   has_many_attached :images
   has_many :comments, dependent: :destroy
   validate :acceptable_images
+  has_many :ratings_received, class_name: 'Rating', foreign_key: 'owner_id'
+
 
 
   scope :search_by_location, ->(query) {

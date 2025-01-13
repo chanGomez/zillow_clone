@@ -1,26 +1,22 @@
 class RatingsController < ApplicationController
-  before_action :find_owner, only: [:create]
+  before_action :set_listing, only: [:create]
 
   def create
-     
-    @owner = Listing.find(params[:listing_id])
-
-    @rating = @owner.ratings_received.new(rating_params)
+    @rating = @listing.ratings_received.new(rating_params)
     @rating.rater = current_user
-    @rating.owner_id = @owner.user_id
+    @rating.owner = @listing.user
 
     if @rating.save
-      puts 'Rating submitted successfully!'
+      redirect_to listing_path(@listing), notice: 'Rating submitted successfully!'
     else
-      puts 'Failed to submit rating.'
+      redirect_to listing_path(@listing), alert: 'Failed to submit rating.'
     end
   end
 
   private
 
-  def find_owner
-    foundOwner = Listing.find(params[:listing_id])
-    @owner = foundOwner.user_id
+  def set_listing
+    @listing = Listing.find(params[:listing_id])
   end
 
   def rating_params
