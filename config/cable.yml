@@ -10,4 +10,5 @@ test:
 
 production:
   adapter: redis
-  url: redis://:your_password@redis-16793.c239.us-east-1-2.ec2.redns.redis-cloud.com:16793
+  url: redis://redis-16793.c239.us-east-1-2.ec2.redns.redis-cloud.com:16793
+channel_prefix: zillow_clone_production
