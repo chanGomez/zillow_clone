@@ -1,177 +1,154 @@
-<%
-=begin%>
-<%= form_with model: listing do |form| %>
-<%if form.object.errors.any?%>
-<% form.object.errors.full_messages.each do |message| %>
-<div>
-    <%=message%>
-</div>
-<%end%>
-<%end%>
+<div class="flex items-center justify-center p-12">
+    <div class="mx-auto w-full max-w-[550px] ">
+        <%= form_with model: listing do |form| %> <%if form.object.errors.any?%> <% form.object.errors.full_messages.each do |message| %>
+        <div>
+            <%=message%>
+        </div>
+        <%end%>
+        <%end%>
 
-<div class="field">
-    <%= form.label :title%>
-    <%= form.text_field :title%>
-</div>
+        <div class="mb-5">
+            <div class="field">
+                <%= form.label :title, class:"mb-3 block text-base font-medium text-[#07074D]" %>
+                <%= form.text_field :title, class:"w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"%>
+            </div>
+        </div>
+        <div class=" mb-5">
+            <div class="field">
+                <%= form.label :location, class:"mb-3 block text-base font-medium text-[#07074D]" %>
+                <%= form.text_field :location, id: "autocomplete", placeholder: "Enter a location", autocomplete: "off", class:"w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" %>
+            </div>
+        </div>
 
-<div class="field">
-    <%= form.label :location %>
-    <%= form.text_field :location, id: "autocomplete", placeholder: "Enter a location", autocomplete: "off" %>
-</div>
+        <%= form.hidden_field :latitude, id: "latitude" %>
+        <%= form.hidden_field :longitude, id: "longitude" %>
 
-<%= form.hidden_field :latitude, id: "latitude" %>
-<%= form.hidden_field :longitude, id: "longitude" %>
+        <script>
+            function initAutocomplete() {
+                const input = document.getElementById("autocomplete");
+                const autocomplete = new google.maps.places.Autocomplete(input, {
+                    types: ["geocode"], // Restrict to address input
+                    componentRestrictions: {
+                        country: "us"
+                    }, // Optional: Restrict to a specific country
+                });
 
-<script>
-    function initAutocomplete() {
-        const input = document.getElementById("autocomplete");
-        const autocomplete = new google.maps.places.Autocomplete(input, {
-            types: ["geocode"], // Restrict to address input
-            componentRestrictions: {
-                country: "us"
-            }, // Optional: Restrict to a specific country
-        });
+                autocomplete.addListener("place_changed", () => {
+                    const place = autocomplete.getPlace();
 
-        autocomplete.addListener("place_changed", () => {
-            const place = autocomplete.getPlace();
+                    if (place.geometry) {
+                        // Extract latitude and longitude
+                        const lat = place.geometry.location.lat();
+                        const lng = place.geometry.location.lng();
 
-            if (place.geometry) {
-                // Extract latitude and longitude
-                const lat = place.geometry.location.lat();
-                const lng = place.geometry.location.lng();
+                        // Populate the hidden fields
+                        document.getElementById("latitude").value = lat;
+                        document.getElementById("longitude").value = lng;
 
-                // Populate the hidden fields
-                document.getElementById("latitude").value = lat;
-                document.getElementById("longitude").value = lng;
+                        console.log("Coordinates:", lat, lng);
 
-                console.log("Coordinates:", lat, lng);
+                        // Extract ZIP code
+                        let zipCode = "";
+                        if (place.address_components) {
+                            place.address_components.forEach((component) => {
+                                if (component.types.includes("postal_code")) {
+                                    zipCode = component.long_name;
+                                }
+                            });
+                        }
 
-                // Extract ZIP code
-                let zipCode = "";
-                if (place.address_components) {
-                    place.address_components.forEach((component) => {
-                        if (component.types.includes("postal_code")) {
-                            zipCode = component.long_name;
+                        // Append ZIP code to the location string
+                        let location = document.getElementById("autocomplete").value;
+                        if (zipCode) {
+                            location += `, ${zipCode}`;
+                        }
+
+                        // Update the input field with the full location
+                        document.getElementById("autocomplete").value = location;
+
+                        // Log the full location
+                        console.log("Full Location:", location);
+                    }
+                });
+
+            }
+        </script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=<%= Rails.application.credentials.google_maps_api_key%>&libraries=places&callback=initAutocomplete" async>
+        </script>
+
+        <div class=" mb-5">
+            <div class="field">
+                <%= form.label :description, class: "mb-3 block text-base font-medium text-[#07074D]"%>
+                <%= form.text_area :description, class:"w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"%>
+            </div>
+        </div>
+        <div class=" mb-5">
+            <div class="field">
+                <%= form.label :price, class: "mb-3 block text-base font-medium text-[#07074D]"%>
+                <%= form.number_field :price, class:"w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"%>
+            </div>
+        </div>
+        <div class="mb-5 py-8">
+            <div class="max-w-md mx-auto rounded-lg overflow-hidden md:max-w-xl">
+                <div class="md:flex">
+                    <div class="w-full p-3">
+                        <div class="relative border-dotted h-48 rounded-lg border-dashed border-2 border-blue-500 bg-white flex justify-center items-center">
+                            <div class="absolute">
+                                <div class="flex flex-col items-center">
+                                    <i class="fa fa-folder-open fa-4x text-blue-500"></i>
+                                    <span class="block text-gray-400 font-normal">Attach your files here</span>
+                                </div>
+                            </div>
+
+                            <!-- Updated file input field -->
+                            <%= form.file_field :images, multiple: true, id: "image-input", accept: "image/*", class: "h-full w-full opacity-0" %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Preview container -->
+            <div id="preview-container" class="flex flex-wrap gap-4 mt-4"></div>
+        </div>
+
+        <!-- Add Font Awesome CSS -->
+        <%= tag.link rel: "stylesheet", href: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" %>
+
+        <script>
+            // Function to handle image previews
+            document.addEventListener('DOMContentLoaded', () => {
+                const imageInput = document.getElementById('image-input');
+                const previewContainer = document.getElementById('preview-container');
+
+                imageInput.addEventListener('change', (event) => {
+                    const files = event.target.files;
+                    previewContainer.innerHTML = ''; // Clear previous previews
+
+                    Array.from(files).forEach((file) => {
+                        if (file && file.type.startsWith('image/')) {
+                            const reader = new FileReader();
+
+                            reader.onload = function(e) {
+                                // Create an img element to display the preview
+                                const img = document.createElement('img');
+                                img.src = e.target.result;
+                                img.alt = file.name;
+                                img.classList.add('w-24', 'h-24', 'object-cover', 'rounded', 'shadow-md');
+
+                                // Append to the preview container
+                                previewContainer.appendChild(img);
+                            };
+
+                            reader.readAsDataURL(file);
                         }
                     });
-                }
+                });
+            });
+        </script>
 
-                // Append ZIP code to the location string
-                let location = document.getElementById("autocomplete").value;
-                if (zipCode) {
-                    location += `, ${zipCode}`;
-                }
 
-                // Update the input field with the full location
-                document.getElementById("autocomplete").value = location;
-
-                // Log the full location
-                console.log("Full Location:", location);
-            }
-        });
-
-    }
-</script>
-<script src="https://maps.googleapis.com/maps/api/js?key=<%= Rails.application.credentials.google_maps_api_key%>&libraries=places&callback=initAutocomplete" async>
-</script>
-
-<div class="field  m-4 ">
-    <%= form.label :images %>
-    <%= form.file_field :images, multiple: true %>
-</div>
-
-<div class="field">
-    <%= form.label :description%>
-    <%= form.text_area :description%>
-</div>
-
-<div class="field">
-    <%= form.label :price%>
-    <%= form.number_field :price%>
-</div>
-
-<div class=" field">
-    <%= form.submit%>
-
-</div>
-<%end%>
-<%
-=end%>
-
-<div class="flex items-center justify-center p-12">
-    <!-- Author: FormBold Team -->
-    <div class="mx-auto w-full max-w-[550px] ">
-        <form>
-            <div class="mb-5">
-                <label for="name" class="mb-3 block text-base font-medium text-[#07074D]">
-                    Full Name
-                </label>
-                <input type="text" name="name" id="name" placeholder="Full Name" class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-            </div>
-            <div class="mb-5">
-                <label for="phone" class="mb-3 block text-base font-medium text-[#07074D]">
-                    Phone Number
-                </label>
-                <input type="text" name="phone" id="phone" placeholder="Enter your phone number" class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-            </div>
-            <div class="mb-5">
-                <label for="email" class="mb-3 block text-base font-medium text-[#07074D]">
-                    Email Address
-                </label>
-                <input type="email" name="email" id="email" placeholder="Enter your email" class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-            </div>
-            <div class="-mx-3 flex flex-wrap">
-                <div class="w-full px-3 sm:w-1/2">
-                    <div class="mb-5">
-                        <label for="date" class="mb-3 block text-base font-medium text-[#07074D]">
-                            Date
-                        </label>
-                        <input type="date" name="date" id="date" class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                    </div>
-                </div>
-                <div class="w-full px-3 sm:w-1/2">
-                    <div class="mb-5">
-                        <label for="time" class="mb-3 block text-base font-medium text-[#07074D]">
-                            Time
-                        </label>
-                        <input type="time" name="time" id="time" class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                    </div>
-                </div>
-            </div>
-
-            <div class="mb-5 pt-3">
-                <label class="mb-5 block text-base font-semibold text-[#07074D] sm:text-xl">
-                    Address Details
-                </label>
-                <div class="-mx-3 flex flex-wrap">
-                    <div class="w-full px-3 sm:w-1/2">
-                        <div class="mb-5">
-                            <input type="text" name="area" id="area" placeholder="Enter area" class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                        </div>
-                    </div>
-                    <div class="w-full px-3 sm:w-1/2">
-                        <div class="mb-5">
-                            <input type="text" name="city" id="city" placeholder="Enter city" class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                        </div>
-                    </div>
-                    <div class="w-full px-3 sm:w-1/2">
-                        <div class="mb-5">
-                            <input type="text" name="state" id="state" placeholder="Enter state" class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                        </div>
-                    </div>
-                    <div class="w-full px-3 sm:w-1/2">
-                        <div class="mb-5">
-                            <input type="text" name="post-code" id="post-code" placeholder="Post Code" class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div>
-                <button class="hover:shadow-form w-full rounded-md bg-[#6A64F1] py-3 px-8 text-center text-base font-semibold text-white outline-none">
-                    Book Appointment
-                </button>
-            </div>
-        </form>
+        <div class=" field hover:shadow-form w-full rounded-md bg-blue-500 py-3 px-8 text-center text-base font-semibold text-white outline-none">
+            <%= form.submit%>
+        </div>
+        <%end%>
     </div>
 </div>
