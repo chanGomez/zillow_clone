@@ -2,12 +2,37 @@ class ChatRoomsController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @chat_rooms = ChatRoom.order(created_at: :desc)
+     @chat_rooms = ChatRoom.all
+
+  if @chat_rooms.any?
+    @chat_room = @chat_rooms.first # Use the first chat room or select one logically
+    @messages = @chat_room.messages.order(created_at: :asc)
+    puts @messages
+    @show_messages_view = render_to_string(template: "chat_rooms/show", layout: false, locals: { messages: @messages })
+    @Listing = Listing.find(@chat_room.listing_id)  # Use listing_id instead of id
+
+
+
+  else
+    @show_messages_view = nil
+  end
   end
 
   def show
-    @chat_room = ChatRoom.find(params[:id])
-    @messages = @chat_room.messages.order(created_at: :asc)
+  @chat_room = ChatRoom.find(params[:id])
+  @messages = @chat_room.messages.order(created_at: :asc)
+
+  # Render the 'show' template as a string
+  @show_messages_view = render_to_string(template: "chat_rooms/show", layout: false, locals: { messages: @messages })
+
+  # Log the rendered content for debugging
+  Rails.logger.debug(@show_messages_view)
+
+  # Optionally respond with JSON if this is for an API or dynamic content rendering
+  respond_to do |format|
+    format.html # default behavior to render show.html.erb
+    format.json { render json: { messages_html: @show_messages_view } }
+  end
   end
 
 def create

@@ -1,30 +1,41 @@
-<div class="prose mx-auto px-5" id="chat-messages" data-chat-room-id="<%= @chat_room.id %>">
-    <%
-=begin%>
-    <h1>Chat with <%= @chat_room.seller == current_user ? @chat_room.buyer.name : @chat_room.seller.name %></h1>
-    <%
-=end%>
-    <h1>Chat room with <%= @chat_room.seller == current_user ? @chat_room.buyer.name : @chat_room.seller.name %></h1>
+<div class="h-svh flex flex-col border-l-4 border-blue-500" data-chat-room-id="<%= @chat_room.id %>">
 
-    <h2>Messages</h2>
-
-    <div id="messages">
+    <div class=" bg-blue-100 flex-1 overflow-y-scroll">
+        <%if @chat_room.messages.any?%>
         <% @chat_room.messages.each do |message| %>
-        <p><strong><%= message.user.name %>:</strong> <%= message.content %> <small><%= message.created_at%> </small></p>
+        <%if message.user_id == current_user.id%>
+        <div class="px-4 py-2">
+            <div class="flex items-center justify-end">
+                <div class="bg-blue-500 text-white rounded-lg p-2 shadow mr-2 max-w-sm">
+                    <p><%= message.content %></p>
+                </div>
+            </div>
+        </div>
+
+        <%else %>
+        <div class="px-4 py-2">
+            <div class="flex items-center mb-2">
+                <div class="font-medium">
+                    <%
+=begin%>
+                    <%message.user.name%>
+                    <%
+=end%>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg p-2 shadow mb-2 max-w-sm">
+                <%= message.content %>
+            </div>
+        </div>
+        <% end %>
+        <% end %>
         <% end %>
     </div>
-    <%
-=begin%>
-    <%= form_with url: chat_room_messages_path(@chat_room), local: true do |form| %>
-    <%= form.text_area :content, rows: 3 %>
-    <%= form.submit 'Send' %>
-    <% end %>
-    <%
-=end%>
+    <div class="bg-gray-100 px-4 py-2">
+        <%= form_with(model: [ @chat_room, @chat_room.messages.build ], class:"flex items-center", url: chat_room_messages_path(@chat_room), local: true) do |form| %>
+        <%= form.text_area :content, placeholder: "Type your message here...", class:"w-full border rounded-full py-2 px-4 mr-2"%>
+        <%= form.submit "Send", class:"bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-full" %>
+        <% end %>
 
-    <%= form_with(model: [ @chat_room, @chat_room.messages.build ], url: chat_room_messages_path(@chat_room), local: true) do |form| %>
-    <%= form.text_area :content, placeholder: "Type your message here..." %>
-    <%= form.submit "Send Message" %>
-    <% end %>
-
+    </div>
 </div>
