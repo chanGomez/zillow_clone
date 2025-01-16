@@ -63,6 +63,8 @@
                     </h3>
                     <p class="mt-1 max-w-2xl text-sm text-gray-500">
                     <h1><%=@user.name%></h1>
+                    <p>Average Rating: <strong> <%= Rating.average_rating_for(@user) == 0 ? 'Be the first to rate this agent.' : Rating.average_rating_for(@user) %></strong></p>
+
 
                     </p>
                 </div>
@@ -121,7 +123,6 @@
                     <%= link_to "Edit", edit_listing_path(@listing) if user_signed_in? && @listing.user_id == current_user.id %>
                 </div>
                 <%end%>
-
             </div>
 
 
@@ -157,20 +158,39 @@
 
         </div>
 
-        <p>Average Rating: <%= Rating.average_rating_for(@user) == 0 ? 'Be the first to rate this agent.' : Rating.average_rating_for(@user) %></p>
+        <div class="bg-white rounded-lg border my-4 w-28rem] m-auto flex flex-col items-center justify-center p-10">
+            <%
+=begin%>
+            <%if user_signed_in? && @listing.user_id != current_user.id%>
+            <div class="hidden lg:inline-block py-2 px-6 bg-blue-500 hover:bg-blue-600 text-sm text-white font-bold rounded-xl transition duration-200 prose m-10" href="#">
+                <%= button_to "Contact Agent", chat_rooms_path(listing_id: @listing.id), method: :post if user_signed_in? && @listing.user_id != current_user.id %>
+            </div>
+            <div class="bg-white border-2 border-blue-500 hidden lg:inline-block py-2 px-6 hover:bg-grey-100 text-sm text-blue-500 font-bold rounded-xl transition duration-200 prose m-10" href="#">
+                <%= button_to "Request a tour", chat_rooms_path(listing_id: @listing.id), method: :post if user_signed_in? && @listing.user_id != current_user.id %>
+            </div>
+            <%else%>
+            <div class="hidden lg:inline-block py-2 px-6 bg-blue-500 hover:bg-blue-600 text-sm text-white font-bold rounded-xl transition duration-200 prose my-3">
+                <%= link_to "Edit", edit_listing_path(@listing) if user_signed_in? && @listing.user_id == current_user.id %>
+            </div>
+            <%end%>
+            <%
+=end%>
 
-        <h2>Leave a Rating:</h2>
-        <%= form_with model: [@listing, Rating.new], url: listing_ratings_path(@listing), local: true do |form| %>
-        <div>
-            <%= form.label :rating, 'Rate this agent (1-5)' %>
-            <%= form.number_field :rating, in: 1..5 %>
+
+            <h2 class="m-3 font-medium">Leave a Rating</h2>
+            <%= form_with model: [@listing, Rating.new], url: listing_ratings_path(@listing), local: true do |form| %>
+            <div class="flex text-align">
+                <%= form.label :rating, class:"m-3 block text-base font-medium text-[#07074D]" %>
+                <%= form.number_field :rating, in: 1..5, class:"w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" %>
+            </div>
+            <div class="hidden lg:inline-block py-2 px-6 bg-blue-500 hover:bg-blue-600 text-sm text-white font-bold rounded-xl transition duration-200 prose my-3">
+
+                <%= form.submit 'Submit Rating' %>
+            </div>
+            <% end %>
+
+
         </div>
-        <div>
-            <%= form.submit 'Submit Rating' %>
-        </div>
-        <% end %>
-
-
 
     </div>
 </div>
