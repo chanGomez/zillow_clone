@@ -67,3 +67,5 @@ end
 gem 'geocoder'
 gem "aws-sdk-s3", require: false
 gem "devise", "~> 4.9"
+gem 'redis'
+

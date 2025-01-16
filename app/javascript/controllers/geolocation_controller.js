@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus";
 
 const options = {
   enableHighAccuracy: true,
-  timeout: 7000,
+  timeout: 17000,
   maximumAge: 0,
 };
 
