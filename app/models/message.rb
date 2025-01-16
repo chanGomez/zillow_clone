@@ -3,6 +3,7 @@ class Message < ApplicationRecord
   belongs_to :chat_room
 
   after_create_commit { broadcast_message }
+    validates :content, presence: true
 
   private
 
